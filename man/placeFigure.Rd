@@ -5,13 +5,12 @@
 the figure number for cross-referencing}
 \usage{placeFigure(key)}
 \arguments{
-  \item{key}{the figure label}
+  \item{key}{identifier for the object being referenced}
 }
-\details{If you place a figure that was already 
-placed previously, the figure rank is overwritten.}
-\value{the referenced figure object}
 
-\author{Who wrote it}
+\value{the referenced figure}
+
+\author{Michael Koohafkan}
 
 
 

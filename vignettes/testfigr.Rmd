@@ -4,7 +4,7 @@
 figr test
 ---------
 
-Inspired by [this blog post](http://rmflight.github.io/posts/2012/10/papersinRmd.html), figr is designed to be a simple figure and table reference manager. This vignette shows how to use the package. 
+Inspired by [this blog post](http://rmflight.github.io/posts/2012/10/papersinRmd.html), `figr` is designed to be a simple figure and table reference manager. This vignette shows how to use the package. 
 
 First, create a figure:
 ```{r message=FALSE, warning=FALSE}

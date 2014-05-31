@@ -2,14 +2,15 @@
 \alias{citeFigure}
 \title{get figure number}
 \description{return the figure reference}
-\usage{citeFigure(key)}
+\usage{citeFigure(key, caption = FALSE)}
 \arguments{
-  \item{key}{the figure label}
+  \item{key}{identifier for the object being referenced}
+  \item{caption}{Logical: If TRUE, the entire caption is returned.}
 }
 
-\value{the figure reference, in character format}
+\value{a figure citation for cross-reference or labeling.}
 
-\author{Who wrote it}
+\author{Michael Koohafkan}
 
 
 

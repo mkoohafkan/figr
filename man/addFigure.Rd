@@ -1,16 +1,17 @@
 \name{addFigure}
 \alias{addFigure}
 \title{create a figure}
-\description{create a reference to a figure (e.g. a plot variable) }
-\usage{addFigure(key, figure)}
+\description{create a reference to a figure (e.g. a ggplot variable) }
+\usage{addFigure(key, figure, caption)}
 \arguments{
-  \item{key}{the figure label}
-  \item{figure}{the plot object}
+  \item{key}{identifier for the figure being referenced}
+  \item{figure}{the figure object}
+  \item{caption}{the figure caption (optional)}
 }
 
-\value{No return value}
+\value{Figure is indexed. No return value}
 
-\author{Who wrote it}
+\author{Michael Koohafkan}
 
 
 
