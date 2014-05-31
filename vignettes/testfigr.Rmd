@@ -1,0 +1,60 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{figr-test}
+
+figr test
+---------
+
+Inspired by [this blog post](http://rmflight.github.io/posts/2012/10/papersinRmd.html), figr is designed to be a simple figure and table reference manager. This vignette shows how to use the package. 
+
+First, create a figure:
+```{r message=FALSE, warning=FALSE}
+require(ggplot2)
+p = qplot(rnorm(500),geom="histogram")
+```
+
+Now we use figr to index it:
+```{r message=FALSE}
+require(figr)
+addFigure('example', p, caption='a histogram.')
+```
+
+now we place it:
+```{r message=FALSE, warning=FALSE}
+placeFigure('example')
+```
+
+We can reference `r citeFigure("example")` by typing `citeFigure("example")`. If we want to write out the full caption, we can type `citeFigure("example", caption=TRUE)` to get `r citeFigure("example", caption=TRUE)`
+
+Note that if we place it again, the ranking is not updated. 
+
+```{r message=FALSE, warning=FALSE}
+placeFigure('example')
+citeFigure("example")
+```
+
+This is a side effect of code that allows the figure to be cited before it is placed.
+
+```{r message=FALSE, warning=FALSE}
+p = qplot(rlnorm(500),geom="histogram")
+addFigure('ex2', p, 'Another plot.')
+citeFigure('ex2', caption=TRUE)
+placeFigure('ex2')
+```
+
+The extension of the package to kable tables is obvious...
+
+```{r message=FALSE, warning=FALSE}
+require(knitr)
+# note only the data is passed to addTable
+d = head(iris[,1:3])
+# note that tables and figures can have the identical keys
+addTable('example', d, caption='a table.')
+citeTable("example", caption=TRUE)
+```
+
+... But a bit clumsy, because the table must be output 'as is'.
+
+```{r message=FALSE, warning=FALSE, results='asis'}
+# need to wrap placeTable inside call to kable
+kable(placeTable('example'))
+```

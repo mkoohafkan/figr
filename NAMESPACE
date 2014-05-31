@@ -1,0 +1,2 @@
+export(addFigure, placeFigure, citeFigure)
+export(addTable, placeTable, citeTable)
