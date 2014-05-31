@@ -1,5 +1,5 @@
-.onAttach = function(libname, pkgname){
-  parentenv = as.environment("package:figr")
+.onLoad = function(libname, pkgname){
+  parentenv = getNamespace("figr")
   # figure environment
   figEnv = new.env(parent=parentenv)
   assign('maxrank', 0, figEnv)
