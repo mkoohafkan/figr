@@ -15,6 +15,6 @@ cite <- function(key, link, caption, type){
   if(link) # add link reference
     lbl = paste("[", lbl, "](#", tag, key, ")", sep="")
   if(caption) # return entire caption
-	lbl = paste(lbl, ': ', getCaption(key, envir=env), sep='')
+	lbl = paste(lbl, ': ', getcaption(key, envir=env), sep='')
   return(lbl)
 }
