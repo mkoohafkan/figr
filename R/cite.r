@@ -1,4 +1,4 @@
-cite <- function(key, link, caption, type){
+cite <- function(key, link, type){
   match.arg(type, c('Figure', 'Table'))
   if(type == 'Figure'){
     env = figEnv
@@ -14,7 +14,5 @@ cite <- function(key, link, caption, type){
   lbl = paste(type, r)  
   if(link) # add link reference
     lbl = paste("[", lbl, "](#", tag, key, ")", sep="")
-  if(caption) # return entire caption
-	lbl = paste(lbl, ': ', getcaption(key, envir=env), sep='')
   return(lbl)
 }

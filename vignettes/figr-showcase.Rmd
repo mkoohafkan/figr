@@ -19,55 +19,87 @@ addFigure('example', p, caption='a histogram')
 # note that figr makes a copy of the plot object
 rm(p)
 ```
+Cross-referencing can be achieved using the HTML anchor tag (`<a>`). We can define a new hook for anchoring a code block.
 
-now we place it. In order to allow linking to the figure, we must anchor it using `anchorFigure('example')`, as I have done right here.`r anchorFigure('example')`
+```{r results='hide', message=FALSE}
+require(knitr)
+knit_hooks$set(anchor = function(before, options, envir) {
+    if (!before) 
+	  paste('<a name="', options$anchor, '"></a>', sep='')
+})
+```
 
-```{r message=FALSE, warning=FALSE}
+We can automatically generate an anchor that will match the figure citation with `anchorFigure('example')`. We are now ready to place the figure. Note that the code chunk below includes the option `anchor=anchorFigure('example')`. 
+
+```{r message=FALSE, warning=FALSE, anchor=anchorFigure('example')}
 placeFigure('example')
 ```
 
-`figr` determines figure numbers by 'ranking' them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`. If we want to write out the full caption, we can type `citeFigure("example", caption=TRUE)` to get `r citeFigure("example", caption=TRUE)`.
+`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`. Note that the anchors are actually placed *below* the code chunk (placing them above would be preferable but I haven't figured out how to do this yet). 
 
-```{r message=FALSE, warning=FALSE}
-placeFigure('example')
-```
-
-Note that if we place the figure again, its ranking is not updated (as can be seen by this link to `r citeFigure("example")`). This is a side effect of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. 
+Calling `placeFigure('example')` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. 
 
 ```{r message=FALSE, warning=FALSE}
 # note you don't actually have to create a figure to cite it!
 invisible(citeFigure('ex2'))
 ```
 
-We'll get to `r citeFigure('ex3')` in a second, but first look at `r citeFigure('ex2')`:`r anchorFigure('ex2')`
+We'll get to `r citeFigure('ex3')` in a second, but first look at `r citeFigure('ex2')`:
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, anchor=anchorFigure('ex2')}
 p2 = qplot(rlnorm(500),geom="histogram")
 addFigure('ex2', p2, 'Another plot.')
 placeFigure('ex2')
 ```
 
-Okay, now for `r citeFigure('ex3')`:`r anchorFigure('ex3')`
+Okay, now for `r citeFigure('ex3')`:
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, anchor=anchorFigure('ex3')}
 p3 = qplot(rgamma(500, 3), geom='histogram')
 addFigure('ex3', p3, 'A third plot.')
 placeFigure('ex3')
 ```
 
-This is a somewhat strange use case, but it may be necessary to create a list of figures or tables at the start of the document. If you are creating a long or complicated documents it may be better to use LaTeX instead of Markdown anyway.
+Note that automatic generation of a list of figures or list of tables is not possible. If you are creating a document that requires those features, you may want to consider using LaTeX instead of Markdown.
 
-The extension of the package to kable tables is obvious, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.`r anchorTable('example')`
+We can also add a hook for figure captions:
 
-```{r message=FALSE, warning=FALSE, results='asis'}
-require(knitr)
+```{r results='hide'}
+knit_hooks$set(plot = function(x, options) {
+  paste('<figure><img src="',
+        opts_knit$get('base.url'), paste(x, collapse = '.'),
+        '"><figcaption>', options$fig.cap, '</figcaption></figure>',
+        sep = '')
+})
+```
+
+A figure caption can be referenced using `labelFigure`. Note that the figure caption does not include a link to the anchor. This is because I have not figured out a way to render markdown within the hook function (having the link in the caption is not really useful, but would be nice for labelling consistency or text formatting). Another issue is that the figure caption needs to be created in a prior code chunk.
+
+```{r}
+addFigure('ex4', qplot(rchisq(500, 3), geom='histogram'), 
+          'I have to define the caption before I place a figure. :(')
+```
+
+Note that `r citeFigure('ex4')` below uses the chunk options `fig.cap=labelFigure('ex4')` and `anchor=anchorFigure('ex4')`
+```{r anchor=anchorFigure('ex4'), fig.cap=labelFigure('ex4'), echo=FALSE, message=FALSE}
+placeFigure('ex4')
+```
+
+The package supports identical support for tables (e.g. `addTable`, `citeTable`, etc.) for e.g. kable objects, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.
+
+```{r message=FALSE, warning=FALSE, results='asis', anchor=anchorTable('example')}
 # note only the data is passed to addTable
 d = head(iris[,1:3])
 addTable('example', d, caption='a table.')
+# code chunk option: results='asis'
 kable(placeTable('example'))
 ```
 
-And we can cite `r citeTable('example')` here. Note that
+There is currently no hook for a table caption code chunk option, but the`labelTable` function is defined in anticipation of such functionality.
 
-1. calls to `placeTable` must be wrapped in a call to `kable` 
-2. code chunk results must be specified as 'asis' (like all calls to `kable`).
+Things on my TODO list:
+* have `figr` check that an anchor has not already been created (what happens when you define duplicate anchors in a page?)
+* Figure out `knitr` plot hooks so that you can define `fig.cap` within the code chunk (I don't know if this is possible).
+* add functions `addFigureCaption` and `addTableCaption` so that you can define the caption before you create the figure or table (useful if previous item is impossible)
+* figure out how to place the anchor at the top of a code block, rather than the bottom.
+* Figure out table captions (nest a table and caption in a 2-cell table?)
