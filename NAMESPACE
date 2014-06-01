@@ -1,2 +1,2 @@
-export(addFigure, placeFigure, citeFigure)
-export(addTable, placeTable, citeTable)
+export(addFigure, placeFigure, citeFigure, anchorFigure)
+export(addTable, placeTable, citeTable, anchorTable)

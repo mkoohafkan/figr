@@ -2,9 +2,10 @@
 \alias{citeFigure}
 \title{get figure number}
 \description{return the figure reference}
-\usage{citeFigure(key, caption = FALSE)}
+\usage{citeFigure(key, link = TRUE, caption = FALSE)}
 \arguments{
   \item{key}{identifier for the object being referenced}
+  \item{link}{logical: If TRUE, relative link to figure is included}
   \item{caption}{Logical: If TRUE, the entire caption is returned.}
 }
 

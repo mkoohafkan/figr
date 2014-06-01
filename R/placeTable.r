@@ -5,8 +5,6 @@ function# table placement and ranking
 (key
 ### identifier for the table being referenced
 ){
-  # update rank if this is first reference
-  updateRank(key, envir=tabEnv)
-  get(key, envir=tabEnv)
+  place(key, type='Table')
 ### the referenced table
 }

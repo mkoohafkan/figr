@@ -8,10 +8,6 @@ figure,
 caption
 ### the figure caption (optional)
 ){
-  # index the figure
-  assign(key, figure, envir=figEnv)
-  if(!missing(caption))
-    addCaption(key, caption, envir=figEnv)
-  invisible(NULL)
+  add(key, figure, caption, type='Figure')
 ### Figure is indexed. No return value
 }

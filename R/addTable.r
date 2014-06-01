@@ -8,10 +8,6 @@ table,
 caption
 ### the table caption (optional)
 ){
-  # index the table
-  assign(key, table, envir=tabEnv)
-  if(!missing(caption))
-    addCaption(key, caption, envir=tabEnv)
-  invisible(NULL)
+  add(key, table, caption, type='Table')
 ### Table is indexed. No return value
 }

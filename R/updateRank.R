@@ -1,12 +1,4 @@
-updateRank <-
-function#update rankings of environment
-(key,
-### identifier for the object being referenced
-envir
-### the environment being updated
-){
-##details<<This is an internal function called by placeFigure() and citeFigure().
-##It should not be called directly.
+updateRank <- function(key, envir){
   varname = paste(key, 'rank', sep='')
   if(!exists(varname, envir=envir)){
     # update figure rankings
@@ -14,7 +6,7 @@ envir
     assign('maxrank', mr, envir=envir)
     # assign the figure rank
     assign(varname, mr, envir=envir)	
-    }
-	get(varname, envir=envir)
-### Rank of figure or table specified by key.
+  }
+  # return of figure or table specified by key 
+  get(varname, envir=envir)
 }

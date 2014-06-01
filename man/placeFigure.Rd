@@ -5,7 +5,7 @@
 the figure number for cross-referencing}
 \usage{placeFigure(key)}
 \arguments{
-  \item{key}{identifier for the object being referenced}
+  \item{key}{identifier for the figure being referenced}
 }
 
 \value{the referenced figure}
