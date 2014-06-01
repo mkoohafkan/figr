@@ -1,0 +1,73 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{figr-showcase}
+
+figr showcase
+---------
+
+`figr` is designed to be a simple figure and table reference manager. This vignette shows how to use the package. 
+
+First, create a figure:
+```{r message=FALSE, warning=FALSE}
+require(ggplot2)
+p = qplot(rnorm(500),geom="histogram")
+```
+
+Now we use figr to index it:
+```{r message=FALSE}
+require(figr)
+addFigure('example', p, caption='a histogram')
+# note that figr makes a copy of the plot object
+rm(p)
+```
+
+now we place it. In order to allow linking to the figure, we must anchor it using `anchorFigure('example')`, as I have done right here.`r anchorFigure('example')`
+
+```{r message=FALSE, warning=FALSE}
+placeFigure('example')
+```
+
+`figr` determines figure numbers by 'ranking' them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`. If we want to write out the full caption, we can type `citeFigure("example", caption=TRUE)` to get `r citeFigure("example", caption=TRUE)`.
+
+```{r message=FALSE, warning=FALSE}
+placeFigure('example')
+```
+
+Note that if we place the figure again, its ranking is not updated (as can be seen by this link to `r citeFigure("example")`). This is a side effect of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. 
+
+```{r message=FALSE, warning=FALSE}
+# note you don't actually have to create a figure to cite it!
+invisible(citeFigure('ex2'))
+```
+
+We'll get to `r citeFigure('ex3')` in a second, but first look at `r citeFigure('ex2')`:`r anchorFigure('ex2')`
+
+```{r message=FALSE, warning=FALSE}
+p2 = qplot(rlnorm(500),geom="histogram")
+addFigure('ex2', p2, 'Another plot.')
+placeFigure('ex2')
+```
+
+Okay, now for `r citeFigure('ex3')`:`r anchorFigure('ex3')`
+
+```{r message=FALSE, warning=FALSE}
+p3 = qplot(rgamma(500, 3), geom='histogram')
+addFigure('ex3', p3, 'A third plot.')
+placeFigure('ex3')
+```
+
+This is a somewhat strange use case, but it may be necessary to create a list of figures or tables at the start of the document. If you are creating a long or complicated documents it may be better to use LaTeX instead of Markdown anyway.
+
+The extension of the package to kable tables is obvious, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.`r anchorTable('example')`
+
+```{r message=FALSE, warning=FALSE, results='asis'}
+require(knitr)
+# note only the data is passed to addTable
+d = head(iris[,1:3])
+addTable('example', d, caption='a table.')
+kable(placeTable('example'))
+```
+
+And we can cite `r citeTable('example')` here. Note that
+
+1. calls to `placeTable` must be wrapped in a call to `kable` 
+2. code chunk results must be specified as 'asis' (like all calls to `kable`).
