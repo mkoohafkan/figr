@@ -9,7 +9,7 @@ cite <- function(key, link, caption, type){
     tag = tabTag
   }
   # update rank if this is first reference
-  r = updateRank(key, envir=env)
+  r = updaterank(key, envir=env)
   # create the label
   lbl = paste(type, r)  
   if(link) # add link reference

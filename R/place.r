@@ -4,6 +4,6 @@ place <- function(key, type){
     env = figEnv
   else if(type == 'Table')
     env = tabEnv
-  updateRank(key, envir=env)
+  updaterank(key, envir=env)
   get(key, envir=env)
 }
