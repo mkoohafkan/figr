@@ -81,11 +81,11 @@ addFigure('ex4', qplot(rchisq(500, 3), geom='histogram'),
 ```
 
 Note that `r citeFigure('ex4')` below uses the chunk options `fig.cap=labelFigure('ex4')` and `anchor=anchorFigure('ex4')`
-```{r anchor=anchorFigure('ex4'), fig.cap=labelFigure('ex4'), echo=FALSE, message=FALSE}
+```{r anchor=anchorFigure('ex4'), fig.cap=labelFigure('ex4'), message=FALSE}
 placeFigure('ex4')
 ```
 
-The package supports identical support for tables (e.g. `addTable`, `citeTable`, etc.) for e.g. kable objects, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.
+The package provides identical support for tables (e.g. `addTable`, `citeTable`, etc.) for e.g. kable objects, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.
 
 ```{r message=FALSE, warning=FALSE, results='asis', anchor=anchorTable('example')}
 # note only the data is passed to addTable
@@ -100,6 +100,6 @@ There is currently no hook for a table caption code chunk option, but the`labelT
 Things on my TODO list:
 * have `figr` check that an anchor has not already been created (what happens when you define duplicate anchors in a page?)
 * Figure out `knitr` plot hooks so that you can define `fig.cap` within the code chunk (I don't know if this is possible).
-* add functions `addFigureCaption` and `addTableCaption` so that you can define the caption before you create the figure or table (useful if previous item is impossible)
+* add argument `caption` to functions `labelFigure` and `labelTable` so that you can create the caption when you label it, even prior to placing or citing the figure or table (useful if previous item is impossible).
 * figure out how to place the anchor at the top of a code block, rather than the bottom.
 * Figure out table captions (nest a table and caption in a 2-cell table?)
