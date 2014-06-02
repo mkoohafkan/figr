@@ -29,13 +29,13 @@ knit_hooks$set(anchor = function(before, options, envir) {
 })
 ```
 
-We can automatically generate an anchor that will match the figure citation with `anchorFigure('example')`. We are now ready to place the figure. Note that the code chunk below includes the option `anchor=anchorFigure('example')`. 
+Note that the anchors will be placed *above* the code chunk, because we are using `if(before)` to specify that the hook is evaluated before the code chunk. (We can place the anchor below the chunk by using `if(!before)`). We can automatically generate an anchor that will match the figure citation with `anchorFigure('example')` (note that we can create the anchor before creating the figure). We will now place the figure. Note that the code chunk below includes the option `anchor=anchorFigure('example')`.
 
 ```{r message=FALSE, warning=FALSE, anchor=anchorFigure('example')}
 placeFigure('example')
 ```
 
-`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`. Note that the anchors are actually placed *below* the code chunk (placing them above would be preferable but I haven't figured out how to do this yet). 
+`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`.  
 
 Calling `placeFigure('example')` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. 
 
@@ -60,28 +60,27 @@ addFigure('ex3', p3, 'A third plot.')
 placeFigure('ex3')
 ```
 
-Note that automatic generation of a list of figures or list of tables is not possible. If you are creating a document that requires those features, you may want to consider using LaTeX instead of Markdown.
+Note that automatic generation of a list of figures is not possible (at least, not at the start of a document--but we could create a function to place one at the end of the document). If you are creating a document that requires those features, you may want to consider using LaTeX instead of Markdown.
 
 We can also add a hook for figure captions:
 
-```{r results='hide'}
+```{r results='hide', message=FALSE}
+require(markdown)
 knit_hooks$set(plot = function(x, options) {
   paste('<figure><img src="',
         opts_knit$get('base.url'), paste(x, collapse = '.'),
-        '"><figcaption>', options$fig.cap, '</figcaption></figure>',
+        '"><figcaption>', renderMarkdown(text=options$fig.cap), '</figcaption></figure>',
         sep = '')
 })
+opts_knit$set(eval.after='fig.cap')
 ```
 
-A figure caption can be referenced using `labelFigure`. Note that the figure caption does not include a link to the anchor. This is because I have not figured out a way to render markdown within the hook function (having the link in the caption is not really useful, but would be nice for labelling consistency or text formatting). Another issue is that the figure caption needs to be created in a prior code chunk.
+A figure caption can be referenced using `labelFigure`. Note the use of the `markdown::renderMarkdown` function inside the plot hook for link formatting. Having the link in the caption is not really useful, but it is nice for labelling consistency.
 
-```{r}
-addFigure('ex4', qplot(rchisq(500, 3), geom='histogram'), 
-          'I have to define the caption before I place a figure. :(')
-```
-
-Note that `r citeFigure('ex4')` below uses the chunk options `fig.cap=labelFigure('ex4')` and `anchor=anchorFigure('ex4')`
+In `r citeFigure('ex4')` below, the chunk options `fig.cap=labelFigure('ex4')` and `anchor=anchorFigure('ex4')` are used.
 ```{r anchor=anchorFigure('ex4'), fig.cap=labelFigure('ex4'), message=FALSE}
+addFigure('ex4', qplot(rchisq(500, 3), geom='histogram'), 
+          'I can define the caption in the code chunk!')
 placeFigure('ex4')
 ```
 
@@ -99,7 +98,4 @@ There is currently no hook for a table caption code chunk option, but the`labelT
 
 Things on my TODO list:
 * have `figr` check that an anchor has not already been created (what happens when you define duplicate anchors in a page?)
-* Figure out `knitr` plot hooks so that you can define `fig.cap` within the code chunk (I don't know if this is possible).
-* add argument `caption` to functions `labelFigure` and `labelTable` so that you can create the caption when you label it, even prior to placing or citing the figure or table (useful if previous item is impossible).
-* figure out how to place the anchor at the top of a code block, rather than the bottom.
 * Figure out table captions (nest a table and caption in a 2-cell table?)

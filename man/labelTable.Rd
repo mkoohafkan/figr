@@ -5,7 +5,7 @@
 \usage{labelTable(key, punc = ":")}
 \arguments{
   \item{key}{identifier for the table being referenced}
-  \item{punc}{seperator to use between reference number and caption
+  \item{link}{logical: If TRUE, relative link to figure is included}    \item{punc}{separator to use between reference number and caption
 Defaults to ":"}
 }
 
