@@ -24,7 +24,7 @@ Cross-referencing can be achieved using the HTML anchor tag (`<a>`). We can defi
 ```{r results='hide', message=FALSE}
 require(knitr)
 knit_hooks$set(anchor = function(before, options, envir) {
-    if (!before) 
+    if (before) 
 	  paste('<a name="', options$anchor, '"></a>', sep='')
 })
 ```
