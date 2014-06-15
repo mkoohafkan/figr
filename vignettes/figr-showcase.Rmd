@@ -1,101 +1,138 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{figr-showcase}
 
-figr showcase
----------
+```{r setup, echo=FALSE}
+require(knitr, quietly=TRUE)
+opts_chunk$set(message=FALSE, warning=FALSE, tidy=FALSE)
+```
 
-`figr` is designed to be a simple figure and table reference manager. This vignette shows how to use the package. 
+Showcase figr: a tour of the package
+=============
 
-First, create a figure:
-```{r message=FALSE, warning=FALSE}
+`figr` is designed to be a simple figure and table reference manager for markdown documents. The package provides **automatic numbering** of document elements (figures and tables) and allows you to **cite**, **cross-reference** (i.e. link) and **label** (i.e. caption) these elements. Functionality for inserting figures from external files is also provided.
+
+The package is designed to be used with the [`knitr`](http://cran.r-project.org/web/packages/knitr/index.html) package and uses both markdown syntax and HTML tags to provide cross-referencing and within-document linking to figures and tables. `knitr` hooks are defined to allow anchoring and figure captioning via chunk options. 
+The package is designed to be easily extendable to other distinct types of document elements, e.g. animations, videos or interactive objects (TODO: add referencing functionality for code chunks). This vignette provides a tour of the main features of `figr`. The other vignette uses the knitr and figr packages to produce an example of a typical undergraduate assignment in a water quality laboratory course.
+
+Placing and referencing figures
+-------------------------------
+
+We will first show how `figr` tracks figures in a document. First, create a plot as you would normally would in a `knitr` document. This is most easily done using the `ggplot2` package:
+
+```{r make-normal}
 require(ggplot2)
 p = qplot(rnorm(500),geom="histogram")
 ```
 
-Now we use figr to index it:
-```{r message=FALSE}
+Next, we index it using `figr`:
+```{r add-normal}
 require(figr)
-addFigure('example', p, caption='a histogram')
+addFigure('normal', p, caption='500 draws from a normal distribution.')
 # note that figr makes a copy of the plot object
 rm(p)
 ```
-Cross-referencing can be achieved using the HTML anchor tag (`<a>`). We can define a new hook for anchoring a code block.
 
-```{r results='hide', message=FALSE}
-require(knitr)
-knit_hooks$set(anchor = function(before, options, envir) {
+A number has not been assigned to the figure yet. Using `addFigure` simply registers the plot with `figr` for future use. Registering the plot with `figr` allows you to place figures using labels, rather than requiring that you remember the variable name itself. This is analogous to `\label{}` in LaTeX. 
+
+`figr` provides cross-referencing capability using the HTML anchor (`<a>`) tag. `figr` defines a new `knitr` code chunk option, `anchor`, to write an anchor element to the document for rendering. The definition of the anchor hook provided by `figr` is shown below. `figr` defines this hook when it is loaded, so you do not need to define this hook yourself.
+
+```{r anchor-definition, eval=FALSE}
+knitr::knit_hooks$set(anchor = function(before, options, envir) {
     if (before) 
 	  paste('<a name="', options$anchor, '"></a>', sep='')
 })
 ```
 
-Note that the anchors will be placed *above* the code chunk, because we are using `if(before)` to specify that the hook is evaluated before the code chunk. (We can place the anchor below the chunk by using `if(!before)`). We can automatically generate an anchor that will match the figure citation with `anchorFigure('example')` (note that we can create the anchor before creating the figure). We will now place the figure. Note that the code chunk below includes the option `anchor=anchorFigure('example')`.
+Note that the anchors are placed above the code chunk because we are using `if(before)` to specify that the hook is evaluated *before* the code chunk itself. (You can redefine the hook to place the anchor below the chunk by using `if(!before)` instead). We can automatically generate an anchor that will match a figure object using with `anchorFigure(figure name)`. 
 
-```{r message=FALSE, warning=FALSE, anchor=anchorFigure('example')}
-placeFigure('example')
+You can **place** a figure and assign it a number with `placeFigure(figure name)` (as shown below) and simultaneously create an anchor for the plot. Note that the following code chunk includes the option `anchor=anchorFigure('normal')` in its header.
+
+```{r place-normal, anchor=anchorFigure('normal')}
+placeFigure('normal')
 ```
 
-`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. We can reference `r citeFigure("example")` (I just did!) by typing `citeFigure("example")`.  
+`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. When `placeFigure` is called, the referenced object is assigned a rank (if it does not have one already--see next paragraph). We can reference a figure, e.g. `r citeFigure("normal")` (I just did!) using `citeFigure(figure name)` in an inline code chunk.
 
-Calling `placeFigure('example')` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. 
+Calling `placeFigure()` or `citeFigure()` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. Note that you can cite a figure before placing or even creating the figure:`r invisible(citeFigure('lognormal'))`.
 
-```{r message=FALSE, warning=FALSE}
-# note you don't actually have to create a figure to cite it!
-invisible(citeFigure('ex2'))
+```{r cite-lognormal}
+# you can also do this inline!
+invisible(citeFigure('lognormal'))
 ```
 
-We'll get to `r citeFigure('ex3')` in a second, but first look at `r citeFigure('ex2')`:
+Now we can reference the later plot, `r citeFigure('gamma')`, before placing the one we just invisibly cited (`r citeFigure('lognormal')`).
 
-```{r message=FALSE, warning=FALSE, anchor=anchorFigure('ex2')}
-p2 = qplot(rlnorm(500),geom="histogram")
-addFigure('ex2', p2, 'Another plot.')
-placeFigure('ex2')
+```{r place-lognormal, anchor=anchorFigure('lognormal')}
+p2 = qplot(rlnorm(500), geom="histogram")
+addFigure('lognormal', p2, '500 draws from a lognormal distribution.')
+placeFigure('lognormal')
 ```
 
-Okay, now for `r citeFigure('ex3')`:
+And now we'll place `r citeFigure('gamma')`:
 
-```{r message=FALSE, warning=FALSE, anchor=anchorFigure('ex3')}
+```{r place-gamma, anchor=anchorFigure('gamma')}
 p3 = qplot(rgamma(500, 3), geom='histogram')
-addFigure('ex3', p3, 'A third plot.')
-placeFigure('ex3')
+addFigure('gamma', p3, 'A third plot.')
+placeFigure('gamma')
 ```
 
-Note that automatic generation of a list of figures is not possible (at least, not at the start of a document--but we could create a function to place one at the end of the document). If you are creating a document that requires those features, you may want to consider using LaTeX instead of Markdown.
+As you can see, placing, anchoring and referencing figures is straightforward. Note that due to the way `knitr` evaluates a document, automatic generation of a list of figures in the front matter of a document is not possible. However, it would be simple to write a function to generate a list of figures at the end of a document, or even write all referenced figures to the end matter of a document. If you are creating a document that requires a list of figures in the front matter of a document, you may want to consider using LaTeX instead of Markdown.
 
-We can also add a hook for figure captions:
+Adding figure captions
+----------------------
 
-```{r results='hide', message=FALSE}
-require(markdown)
+So far we have ignored figure captions. `figr` also defines a new `knitr` hook for adding captions to a figure. The hook definition is shown below, but you do not need to define this hook yourself as `figr` defines it on load.
+
+```{r caption-definition, eval=FALSE}
 knit_hooks$set(plot = function(x, options) {
   paste('<figure><img src="',
-        opts_knit$get('base.url'), paste(x, collapse = '.'),
-        '"><figcaption>', renderMarkdown(text=options$fig.cap), '</figcaption></figure>',
+        knitr::opts_knit$get('base.url'), paste(x, collapse = '.'),
+        '"><figcaption>', text=options$fig.cap, '</figcaption></figure>',
         sep = '')
 })
-opts_knit$set(eval.after='fig.cap')
+knitr::opts_knit$set(eval.after='fig.cap')
 ```
 
-A figure caption can be referenced using `labelFigure`. Note the use of the `markdown::renderMarkdown` function inside the plot hook for link formatting. Having the link in the caption is not really useful, but it is nice for labelling consistency.
+Note that the hook definition allows the figure caption to be generated within the referenced code chunk thanks to the `eval.after` option. The `fig.caption` hook will likely be included in a future  knitr release (> version 1.6).
 
-In `r citeFigure('ex4')` below, the chunk options `fig.cap=labelFigure('ex4')` and `anchor=anchorFigure('ex4')` are used.
-```{r anchor=anchorFigure('ex4'), fig.cap=labelFigure('ex4'), message=FALSE}
-addFigure('ex4', qplot(rchisq(500, 3), geom='histogram'), 
-          'I can define the caption in the code chunk!')
-placeFigure('ex4')
+A figure caption can be referenced using `labelFigure(figure name)` (recall that we defined the caption when we registered the figure using `addFigure`). an anchor link is placed within the caption itself; Having the link in the caption is not really useful, but it is nice for labelling consistency. In `r citeFigure('chisquared')` below, the chunk options `fig.cap=labelFigure('chisquared')` and `anchor=anchorFigure('chisquared')` are used.
+
+```{r place-chisq, anchor=anchorFigure('chisquared'), fig.cap=labelFigure('chisquared')}
+addFigure('chisquared', qplot(rchisq(500, 3), geom='histogram'), 
+          '500 draws from a Chi squared distribution.')
+placeFigure('chisquared')
 ```
 
-The package provides identical support for tables (e.g. `addTable`, `citeTable`, etc.) for e.g. kable objects, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting.
+Placing figures from external files
+-----------------------------------
 
-```{r message=FALSE, warning=FALSE, results='asis', anchor=anchorTable('example')}
-# note only the data is passed to addTable
-d = head(iris[,1:3])
-addTable('example', d, caption='a table.')
-# code chunk option: results='asis'
-kable(placeTable('example'))
+Placing an external image in a markdown document is straightforward from an HTML standpoint, but requires specific formatting to take advantage of the `figr` and `knitr` packages. Placing an external image as a figure is similar to placing an R plot object, but uses the function `ExternalFigure` instead of `placeFigure`. Furthermore, it requires that the code chunk `results` option is specified `'asis'`. When adding an external image as a Figure using `addFigure`, the path to the file is specified instead of an R plot object in the call to `addFigure`. In `r citeFigure('external')` below, the chunk options `fig.cap=labelFigure('external')`, `anchor=anchorFigure('external')`, and `results='asis'` are used.
+
+```{r place-external, anchor=anchorFigure('external'), fig.cap=labelFigure('external'), results='asis'} 
+addFigure('external', 
+          'http://upload.wikimedia.org/wikipedia/commons/5/5f/Pantheon_Rome_miniature_XV.jpg', 
+          'an image from [Wikipedia](http://en.wikipedia.org/wiki/Piazza_della_Rotonda).')
+ExternalFigure("external", caption=TRUE)
 ```
 
-There is currently no hook for a table caption code chunk option, but the`labelTable` function is defined in anticipation of such functionality.
+Note that when adding a caption to an external figure, `labelFigure` is called internally by `placeTable` when `caption=TRUE` (rather than being used through a code chunk option). `externalFigure` also accepts arguments for figure `height` and `width`, in inches (same units as `knitr`'s `fig.width` and `fig.height` chunk options). If `height` or `width` are not specified, the `knitr` global settings are assumed. 
+
+Placing and referencing tables
+------------------------------
+
+`figr` provides identical functionality (e.g. `addTable`, `citeTable`, etc.) for kable objects, as shown by `r citeTable('example')`. Note that tables can have identical names to figures without risk of overwriting. Remember that when printing kable tables, the code chunk results must be specified 'asis'.
+
+```{r place-table, results='asis', anchor=anchorTable('example'), tidy=FALSE}
+# note only the dataframe is passed to addTable
+d = head(iris[,1:5])
+# note that you can place other links in a caption using regular markdown syntax!
+addTable('example', d, 
+caption='The first five rows of the [iris](http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/iris.html) dataset.')
+placeTable('example', caption=TRUE)
+```
+
+Note that table captioning is handled slightly differently, as the table caption is defined in the call to `kable`. A labelTable function is defined for symmetry with `labelFigure` but is called internally by `placeTable` when `caption=TRUE`, rather than being used through a code chunk option (similar to adding captions with `externalFigure`).
 
 Things on my TODO list:
 * have `figr` check that an anchor has not already been created (what happens when you define duplicate anchors in a page?)
-* Figure out table captions (nest a table and caption in a 2-cell table?)
+* produce citing and referencing functions for code chunks

@@ -5,7 +5,7 @@
 \usage{addFigure(key, figure, caption)}
 \arguments{
   \item{key}{identifier for the figure being referenced}
-  \item{figure}{the figure object}
+  \item{figure}{the figure object, or a path to an image file}
   \item{caption}{the figure caption (optional)}
 }
 

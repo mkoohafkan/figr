@@ -1,13 +1,6 @@
 cite <- function(key, link, type){
-  match.arg(type, c('Figure', 'Table'))
-  if(type == 'Figure'){
-    env = figEnv
-    tag = figTag
-  }
-  else if(type == 'Table'){
-    env = tabEnv
-    tag = tabTag
-  }
+  env = specenv(type)
+  tag = get('anchortag', envir=env)  
   # update rank if this is first reference
   r = updaterank(key, envir=env)
   # create the label

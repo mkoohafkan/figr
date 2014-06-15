@@ -1,7 +1,7 @@
 \name{addTable}
 \alias{addTable}
 \title{create a table}
-\description{create a reference to a table (e.g. a ggplot variable) }
+\description{create a reference to a table (e.g. a kable object) }
 \usage{addTable(key, table, caption)}
 \arguments{
   \item{key}{identifier for the table being referenced}

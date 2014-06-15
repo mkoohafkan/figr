@@ -2,10 +2,11 @@
 \alias{labelTable}
 \title{Table caption }
 \description{Place a table caption}
-\usage{labelTable(key, punc = ":")}
+\usage{labelTable(key, link = TRUE, punc = ":")}
 \arguments{
   \item{key}{identifier for the table being referenced}
-  \item{link}{logical: If TRUE, relative link to figure is included}    \item{punc}{separator to use between reference number and caption
+  \item{link}{logical: If TRUE, relative link to figure is included}
+  \item{punc}{seperator to use between reference number and caption
 Defaults to ":"}
 }
 

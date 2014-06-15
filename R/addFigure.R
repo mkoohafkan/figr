@@ -4,7 +4,7 @@ function# create a figure
 (key,
 ### identifier for the figure being referenced
 figure,
-### the figure object
+### the figure object, or a path to an image file
 caption
 ### the figure caption (optional)
 ){

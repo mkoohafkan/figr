@@ -7,8 +7,8 @@ caption,
 envir
 ### The environment where the referenced object resides
 ){
-##details<<This is an internal function called by placeFigure() and citeFigure().
-##It should not be called directly.
+##details<<This is an internal function called by 
+##add() and label(). It should not be called directly.
   varname = paste(key, 'caption', sep="")
   assign(varname, caption, envir=envir)
   invisible(NULL)

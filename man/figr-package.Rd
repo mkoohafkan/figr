@@ -8,12 +8,12 @@
 \tabular{ll}{Package: \tab figr\cr
 Type: \tab Package\cr
 Title: \tab Simple figure and table indexer for use with document generation.\cr
-Version: \tab 0.2\cr
+Version: \tab 0.3\cr
 Date: \tab 2014-05-30\cr
 Author: \tab Michael Koohafkan\cr
 Maintainer: \tab Michael Koohafkan <michael.koohafkan@gmail.com>\cr
 Depends: \tab R (>= 3.1.0)\cr
-Suggests: \tab knitr, ggplot2\cr
+Suggests: \tab knitr, ggplot2, markdown\cr
 VignetteBuilder: \tab knitr\cr
 License: \tab GPL\cr}
 }

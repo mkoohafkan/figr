@@ -1,2 +1,6 @@
+import(knitr)
+import(markdown)
+
 export(addFigure, placeFigure, citeFigure, anchorFigure, labelFigure)
 export(addTable, placeTable, citeTable, anchorTable, labelTable)
+export(ExternalFigure)
