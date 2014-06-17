@@ -2,15 +2,17 @@ ExternalFigure = function#Place external image
 ### Place a Figure from a file.
 (key,
 ### identifier for the figure being referenced
-caption=TRUE,
+caption,
 ### logical: place figure caption?
 width,
 ### the figure width in inches. Defaults to knitr global chunk setting
 height
 ### the figure height in inches. Defaults to knitr global chunk setting
 ){
-  if(caption)
+  if(as.logical(caption))
     lbl = renderMarkdown(text=labelFigure(key))
+  else if(is.character(caption))
+    lbl = renderMarkdown(caption)
   else
     lbl = NULL
   if(missing(width))

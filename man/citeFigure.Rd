@@ -2,7 +2,7 @@
 \alias{citeFigure}
 \title{get figure number}
 \description{return the figure reference}
-\usage{citeFigure(key, link = TRUE)}
+\usage{citeFigure(key, link)}
 \arguments{
   \item{key}{identifier for the figure being referenced}
   \item{link}{logical: If TRUE, relative link to figure is included}

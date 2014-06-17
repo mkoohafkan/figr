@@ -2,9 +2,9 @@ labelFigure <- function#Figure caption
 ### Place a figure caption
 (key, 
 ### identifier for the figure being referenced
-link=TRUE,
+link,
 ### logical: If TRUE, relative link to figure is included
-punc=":"
+punc
 ### separator to use between reference number and caption
 ### Defaults to ":"
 ){

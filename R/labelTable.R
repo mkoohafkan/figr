@@ -2,9 +2,9 @@ labelTable <- function#Table caption
 ### Place a table caption
 (key, 
 ### identifier for the table being referenced
-link=TRUE,
+link,
 ### logical: If TRUE, relative link to figure is included
-punc=":"
+punc
 ### seperator to use between reference number and caption
 ### Defaults to ":"
 ){

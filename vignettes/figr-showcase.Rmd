@@ -12,7 +12,7 @@ Showcase figr: a tour of the package
 `figr` is designed to be a simple figure and table reference manager for markdown documents. The package provides **automatic numbering** of document elements (figures and tables) and allows you to **cite**, **cross-reference** (i.e. link) and **label** (i.e. caption) these elements. Functionality for inserting figures from external files is also provided.
 
 The package is designed to be used with the [`knitr`](http://cran.r-project.org/web/packages/knitr/index.html) package and uses both markdown syntax and HTML tags to provide cross-referencing and within-document linking to figures and tables. `knitr` hooks are defined to allow anchoring and figure captioning via chunk options. 
-The package is designed to be easily extendable to other distinct types of document elements, e.g. animations, videos or interactive objects (TODO: add referencing functionality for code chunks). This vignette provides a tour of the main features of `figr`. The other vignette uses the knitr and figr packages to produce an example of a typical undergraduate assignment in a water quality laboratory course.
+The package is designed to be easily extendable to other distinct types of document elements, e.g. animations, videos or interactive objects (TODO: add referencing functionality for code chunks). This vignette provides a tour of the main features of `figr`. 
 
 Placing and referencing figures
 -------------------------------
@@ -34,7 +34,7 @@ rm(p)
 
 A number has not been assigned to the figure yet. Using `addFigure` simply registers the plot with `figr` for future use. Registering the plot with `figr` allows you to place figures using labels, rather than requiring that you remember the variable name itself. This is analogous to `\label{}` in LaTeX. 
 
-`figr` provides cross-referencing capability using the HTML anchor (`<a>`) tag. `figr` defines a new `knitr` code chunk option, `anchor`, to write an anchor element to the document for rendering. The definition of the anchor hook provided by `figr` is shown below. `figr` defines this hook when it is loaded, so you do not need to define this hook yourself.
+`figr` provides cross-referencing capability using the HTML anchor (`<a>`) tag. `figr` defines a new `knitr` code chunk option, `anchor`, to write an anchor element to the document for rendering. A simplified definition of the anchor hook provided by `figr` is shown below. `figr` defines this hook when it is loaded so you do can immediately use the `anchor` option after loading figr.
 
 ```{r anchor-definition, eval=FALSE}
 knitr::knit_hooks$set(anchor = function(before, options, envir) {
@@ -51,9 +51,9 @@ You can **place** a figure and assign it a number with `placeFigure(figure name)
 placeFigure('normal')
 ```
 
-`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. When `placeFigure` is called, the referenced object is assigned a rank (if it does not have one already--see next paragraph). We can reference a figure, e.g. `r citeFigure("normal")` (I just did!) using `citeFigure(figure name)` in an inline code chunk.
+`figr` determines figure numbers by ranking them based on the order they are placed or cited in the document. When `placeFigure` is called, the referenced object is assigned a rank (if it does not have one already--see next paragraph). We can reference a figure, e.g. `r citeFigure("normal")` (I just did!) using `citeFigure(figure name)` in an inline code chunk. Note that anchoring also updates a figure rank, so the `addFigure` and `placeFigure` functions are not technically needed if you will not need to reproduce the figure again later (i.e. in an appendix).
 
-Calling `placeFigure()` or `citeFigure()` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed or cited, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. Note that you can cite a figure before placing or even creating the figure:`r invisible(citeFigure('lognormal'))`.
+Calling `placeFigure()` or `citeFigure()` a second time will not change the rankings. This is the result of code that allows a figure to be cited before it is placed. A figure is not ranked until it is placed, cited or anchored, so if for some reason you need to refer to a later figure you must cite or place any intervening figures first. Note that you can cite a figure before placing or even creating the figure:`r invisible(citeFigure('lognormal'))`
 
 ```{r cite-lognormal}
 # you can also do this inline!
@@ -72,7 +72,7 @@ And now we'll place `r citeFigure('gamma')`:
 
 ```{r place-gamma, anchor=anchorFigure('gamma')}
 p3 = qplot(rgamma(500, 3), geom='histogram')
-addFigure('gamma', p3, 'A third plot.')
+addFigure('gamma', p3, '500 draws from a gamma distribution.')
 placeFigure('gamma')
 ```
 
@@ -90,7 +90,7 @@ knit_hooks$set(plot = function(x, options) {
         '"><figcaption>', text=options$fig.cap, '</figcaption></figure>',
         sep = '')
 })
-knitr::opts_knit$set(eval.after='fig.cap')
+opts_knit$set(eval.after='fig.cap')
 ```
 
 Note that the hook definition allows the figure caption to be generated within the referenced code chunk thanks to the `eval.after` option. The `fig.caption` hook will likely be included in a future  knitr release (> version 1.6).
@@ -99,7 +99,7 @@ A figure caption can be referenced using `labelFigure(figure name)` (recall that
 
 ```{r place-chisq, anchor=anchorFigure('chisquared'), fig.cap=labelFigure('chisquared')}
 addFigure('chisquared', qplot(rchisq(500, 3), geom='histogram'), 
-          '500 draws from a Chi squared distribution.')
+          '500 draws from a Chi-squared distribution.')
 placeFigure('chisquared')
 ```
 
@@ -109,6 +109,7 @@ Placing figures from external files
 Placing an external image in a markdown document is straightforward from an HTML standpoint, but requires specific formatting to take advantage of the `figr` and `knitr` packages. Placing an external image as a figure is similar to placing an R plot object, but uses the function `ExternalFigure` instead of `placeFigure`. Furthermore, it requires that the code chunk `results` option is specified `'asis'`. When adding an external image as a Figure using `addFigure`, the path to the file is specified instead of an R plot object in the call to `addFigure`. In `r citeFigure('external')` below, the chunk options `fig.cap=labelFigure('external')`, `anchor=anchorFigure('external')`, and `results='asis'` are used.
 
 ```{r place-external, anchor=anchorFigure('external'), fig.cap=labelFigure('external'), results='asis'} 
+# note that you can place other links in a caption using regular markdown syntax!
 addFigure('external', 
           'http://upload.wikimedia.org/wikipedia/commons/5/5f/Pantheon_Rome_miniature_XV.jpg', 
           'an image from [Wikipedia](http://en.wikipedia.org/wiki/Piazza_della_Rotonda).')
@@ -125,7 +126,6 @@ Placing and referencing tables
 ```{r place-table, results='asis', anchor=anchorTable('example'), tidy=FALSE}
 # note only the dataframe is passed to addTable
 d = head(iris[,1:5])
-# note that you can place other links in a caption using regular markdown syntax!
 addTable('example', d, 
 caption='The first five rows of the [iris](http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/iris.html) dataset.')
 placeTable('example', caption=TRUE)
@@ -133,6 +133,50 @@ placeTable('example', caption=TRUE)
 
 Note that table captioning is handled slightly differently, as the table caption is defined in the call to `kable`. A labelTable function is defined for symmetry with `labelFigure` but is called internally by `placeTable` when `caption=TRUE`, rather than being used through a code chunk option (similar to adding captions with `externalFigure`).
 
-Things on my TODO list:
+Citing code chunks
+------------------
+
+`figr` also enables you to cross-reference and anchor chunks. Chunks can be cited and anchored in the same manner as figures and tables using the `citeChunk` and `addChunk` functions. However, usershould consider the following when citing chunks:
+
+1. if you want to anchor both the chunk and any plots or figures produced in the chunk, you must concatenate the anchors into a single string (e.g. `anchor=paste(anchorFigure('example'), anchorChunk('example'))`). This means that multiple anchors will be indistinguishable. It may be preferable to split example code and outputs into separate chunks for anchoring.
+2. You cannot add a caption to a code chunk (there is no `labelChunk` function).
+3. A chunk must be anchored or cited in order to be ranked. 
+
+The third point can create some confusion when a user selectively anchors chunks. For example, `r citeChunk('cite-chunk')` below is clearly not the first chunk in the document, but it is the first *cited* chunk. However, anchored chunks are not visually distinguished from non-anchored chunks, which may make it difficult for users to refer to specific chunks when linking is not available. It may therefore be desirable to format anchored chunks differently from standard chunks. This could perhaps be achieved using some kind of frame, and using the term "blocks" to refer to anchored chunks. 
+
+An example of chunk anchoring is shown below. As an additional shortcut, passing the chunk option `anchor=TRUE` allows the user to anchor and register a chunk using its `label` option. 
+
+```{r redefine-anchor, echo=FALSE, eval=FALSE}
+knit_hooks$set(anchor = function(before, options, envir) {
+    if (before){ 
+      if(is.character(options$anchor))
+	    paste('<a name="', options$anchor, '"></a>', sep='')
+      else if(as.logical(options$anchor))
+	    paste('<a name="', anchorChunk(options$label), '"></a>', sep='')
+	}
+  })
+  opts_chunk$set(anchor=FALSE)
+```
+
+```{r cite-chunk, anchor=TRUE, eval=FALSE}
+# You can cite chunks even if they are not evaluated
+# label = 'cite-chunk'
+paste(opts_current$get('label'), '   ', opts_current$get('anchor'))
+``` 
+
+Referencing a chunk that references another chunk using the `ref.label` chunk option is equivalent to the expected behavior of a `placeChunk` function. Chunks that refer to other chunks (like `r citeChunk('refer-chunk')`) are given their own rank. Note that `r citeChunk('refer-chunk')` uses the options `ref.label='cite-chunk'` and `anchor=anchorChunk('refer-chunk')`.
+
+```{r refer-chunk, ref.label='cite-chunk', anchor=anchorChunk('refer-chunk')}
+```
+
+Beware that there are no checks for whether an anchored chunk is evaluated or even echoed. Anchoring non-echoed chunks will be cause them to be ranked and an anchor to appear where the code block would be placed if `echo=TRUE`. The definition of the anchor hook is shown in `r citeChunk('redefine-anchor')`. Note that the chunk shown is actually a reference to a hidden chunk I defined earlier by creating an empty chunk with the same name as the hidden chunk and using anchor=TRUE`.
+
+```{r redefine-anchor, anchor=TRUE, eval=FALSE}
+```
+
+Things on my TODO list
+----------------------
+
 * have `figr` check that an anchor has not already been created (what happens when you define duplicate anchors in a page?)
-* produce citing and referencing functions for code chunks
+* make object linking to anchors a global setting (something like `opts_figr$set("link", FALSE)`)
+* copy referenced external files to `knitr`'s figure folder using `knitr::fig.path`. 

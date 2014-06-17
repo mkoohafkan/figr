@@ -3,7 +3,7 @@ function# get figure number
 ### return the figure reference
 (key,
 ### identifier for the figure being referenced
-link=TRUE
+link
 ### logical: If TRUE, relative link to figure is included
 ){
   cite(key, link, type='Figure')

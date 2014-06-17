@@ -2,13 +2,13 @@
 \alias{label}
 \title{label}
 
-\usage{label(key, link, punc = ":", type)}
+\usage{label(key, label.link, label.punc, type)}
 \arguments{
   \item{key}{
 }
-  \item{link}{
+  \item{label.link}{
 }
-  \item{punc}{
+  \item{label.punc}{
 }
   \item{type}{
 }

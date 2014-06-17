@@ -2,7 +2,7 @@
 \alias{labelFigure}
 \title{Figure caption}
 \description{Place a figure caption}
-\usage{labelFigure(key, link = TRUE, punc = ":")}
+\usage{labelFigure(key, link, punc)}
 \arguments{
   \item{key}{identifier for the figure being referenced}
   \item{link}{logical: If TRUE, relative link to figure is included}
