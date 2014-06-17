@@ -10,7 +10,7 @@ height
 ### the figure height in inches. Defaults to knitr global chunk setting
 ){
   if(caption)
-    lbl = renderMarkdown(text=labelFigure('external'))
+    lbl = renderMarkdown(text=labelFigure(key))
   else
     lbl = NULL
   if(missing(width))
