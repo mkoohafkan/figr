@@ -1,4 +1,5 @@
 .onLoad = function(libname, pkgname){
+  warning('This package is deprecated. Switch to the kfigr package for\n  streamlined cross-referencing that integrates tightly with\n  knitr. Download the development version today by calling \n  devtools::install_github("kfigr", "mkoohafkan").')
   parentenv = getNamespace("figr")
   # options environment
   optsfigr <-new.env(parent=parentenv)
