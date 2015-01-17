@@ -1,4 +1,4 @@
 figr
 ====
 
-first stab at a figure and table reference manager for use with knitr and rmarkdown
+This package has been retired and superseded by [kfigr](https://github.com/mkoohafkan/kfigr).
